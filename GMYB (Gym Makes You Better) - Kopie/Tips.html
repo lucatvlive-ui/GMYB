@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Tipps & Tricks von Profisportlern - Trainings-Guides für alle Muskelgruppen">
+    <meta name="theme-color" content="#FF6B35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Tips & Tricks - Gym Makes You Better</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="bilder/icon-192.png">
+    <link rel="apple-touch-icon" href="bilder/icon-192.png">
+    <link rel="stylesheet" href="lib/style.css">
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="lib/script.js"></script>
+    <style>
+        .tips-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            margin-top: 100px;
+        }
+
+        .muscle-group {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #FF6B35;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .muscle-group:hover {
+            background: #222;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .muscle-group h2 {
+            margin-top: 0;
+            color: #FF6B35;
+            font-size: 24px;
+        }
+
+        .muscle-group p {
+            color: #ccc;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .tips-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .tips-modal-content {
+            background: #1a1a1a;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 2px solid #FF6B35;
+        }
+
+        .close-tips {
+            color: #FF6B35;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-tips:hover {
+            color: #fff;
+        }
+
+        .tip-item {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #FF6B35;
+        }
+
+        .tip-item h4 {
+            margin-top: 0;
+            color: #FF6B35;
+        }
+
+        .tip-item .athlete {
+            font-style: italic;
+            color: #4CAF50;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .tip-item p {
+            margin: 8px 0;
+            color: #ddd;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="logo">
+    <a href="index.html">
+        <img src="bilder/Logo_white.png" width="200" height="auto" alt="Logo">
+    </a>
+</div>
+
+<div class="user-info">
+    <span id="user-greeting">Willkommen!</span>
+    <button class="profile-btn" onclick="window.location.href='Profil.html'">👤 Profil</button>
+    <button class="logout-btn" onclick="logout()">Abmelden</button>
+</div>
+
+<div class="tips-container" id="tipsContainer">
+    <!-- Dynamisch gefüllt mit JavaScript -->
+</div>
+
+<!-- Tips Modal -->
+<div id="tipsModal" class="tips-modal">
+    <div class="tips-modal-content">
+        <span class="close-tips" onclick="closeTipsModal()">&times;</span>
+        <h2 id="modalTitle"></h2>
+        <div id="modalTipsContent"></div>
+    </div>
+</div>
+
+<script>
+    // Tipps Datenbank
+    const tipsData = {
+        "Bizeps": {
+            emoji: "💪",
+            tips: [
+                {
+                    title: "Perfekte Curl Form",
+                    description: "Halten Sie Ihre Ellbogen fest an Ihrem Körper und bewegen Sie nur Ihren Unterarm. Dies isoliert den Bizeps besser und verhindert Schwung.",
+                    athlete: "Arnold Schwarzenegger"
+                },
+                {
+                    title: "Mind-Muscle Connection",
+                    description: "Konzentrieren Sie sich darauf, den Bizeps zu spüren, anstatt nur das Gewicht zu heben. Langsame, kontrollierte Bewegungen sind wichtiger als schwere Gewichte.",
+                    athlete: "Larry Wheels"
+                },
+                {
+                    title: "Unterschiedliche Grip-Variationen",
+                    description: "Nutzen Sie Hammer Curls, Reverse Curls und breite Griffe um verschiedene Teile des Bizeps zu trainieren.",
+                    athlete: "Kai Greene"
+                },
+                {
+                    title: "Zuhause: Dumbbell Curls",
+                    description: "Mit nur Kurzhanteln können Sie zu Hause großartige Bizeps-Workouts machen. 3-4 Sätze à 10-12 Wiederholungen sind perfekt.",
+                    athlete: "Christian Guzman"
+                },
+                {
+                    title: "Im Gym: EZ-Bar Curls",
+                    description: "Die EZ-Bar ist perfekt für intensives Bizeps-Training. Sie reduziert Stress auf die Handgelenke und ermöglicht schwerere Gewichte.",
+                    athlete: "Breon Ansley"
+                }
+            ]
+        },
+        "Trizeps": {
+            emoji: "🦾",
+            tips: [
+                {
+                    title: "Dips für Masse",
+                    description: "Dips sind eine der besten Übungen für Trizeps-Masse. Versuchen Sie, zusätzliches Gewicht hinzuzufügen, wenn Sie sich leicht fühlen.",
+                    athlete: "Jeff Nippard"
+                },
+                {
+                    title: "Overhead Tricep Extensions",
+                    description: "Diese Bewegung dehnt den Trizeps gut und ermöglicht tiefe Kontraktionen. Verwenden Sie ein moderates Gewicht mit sauberer Form.",
+                    athlete: "Etika"
+                },
+                {
+                    title: "Armvolumen",
+                    description: "Trainieren Sie Ihren Trizeps 2-3x pro Woche mit unterschiedlichen Übungen. Der Trizeps macht 2/3 der Armgröße aus!",
+                    athlete: "Mountain Dog John Meadows"
+                },
+                {
+                    title: "Zuhause: Stuhl Dips",
+                    description: "Mit nur einem Stuhl können Sie effektive Trizeps-Dips machen. Erhöhen Sie die Schwierigkeit, indem Sie Füße anheben oder Gewicht auf Ihren Schoß legen.",
+                    athlete: "Mike Thurston"
+                },
+                {
+                    title: "Im Gym: Trizeps Seil",
+                    description: "Das Trizeps-Seil am Kabelzug ist perfekt für Isolation und Pump. Drücken Sie nach unten und trennen Sie das Seil am unteren Punkt.",
+                    athlete: "Derek Lunsford"
+                }
+            ]
+        },
+        "Brust": {
+            emoji: "🏋️",
+            tips: [
+                {
+                    title: "Bankdrücken Progression",
+                    description: "Das klassische Bankdrücken ist König. Konzentrieren Sie sich darauf, die Last zu erhöhen und mit gutem Volumen zu arbeiten.",
+                    athlete: "Ronnie Coleman"
+                },
+                {
+                    title: "Negative Repetitionen",
+                    description: "Nehmen Sie sich 3-4 Sekunden Zeit, um das Gewicht zu senken. Dies führt zu mehr Muskelschaden und Wachstum.",
+                    athlete: "Rich Piana"
+                },
+                {
+                    title: "Innere und äußere Brust",
+                    description: "Nutzen Sie enge Griffe und Flyes für die innere Brust und breite Griffe für die äußere Brust.",
+                    athlete: "Chris Bumstead"
+                },
+                {
+                    title: "Zuhause: Liegestütze Variationen",
+                    description: "Klassische Liegestütze, breite Liegestütze und enge Liegestütze trainieren verschiedene Bereiche der Brust. Machen Sie 3 Sätze à 12-15 Reps.",
+                    athlete: "Cody Simms"
+                },
+                {
+                    title: "Im Gym: Smith Machine Presse",
+                    description: "Die Smith Machine ermöglicht saubere, progressive Überlassung für Brustmasse. Experimentieren Sie mit Winkeln für verbesserte Aktivierung.",
+                    athlete: "Fouad Abiad"
+                }
+            ]
+        },
+        "Rücken": {
+            emoji: "🔙",
+            tips: [
+                {
+                    title: "Breiter Latissimus",
+                    description: "Verwenden Sie Kabelzüge und Widegrip Pullups um einen breiten Rücken zu entwickeln. Denken Sie daran, die Ellbogen zu ziehen, nicht die Hände.",
+                    athlete: "Frank Zane"
+                },
+                {
+                    title: "Kreuzheben für Dicke",
+                    description: "Kreuzheben bauen Rückenmasse schneller auf als fast jede andere Übung. Perfektionieren Sie Ihre Form und erhöhen Sie progressiv das Gewicht.",
+                    athlete: "Eddie Hall"
+                },
+                {
+                    title: "Ruder-Variationen",
+                    description: "Nutzen Sie Kurzhantel-, Barbell- und Maschinen-Rudern um alle Teile des Rückens zu treffen.",
+                    athlete: "DeAndre Baker"
+                },
+                {
+                    title: "Zuhause: Klimmzüge & Widerstandsbänder",
+                    description: "Pull-ups/Klimmzüge sind perfekt für zu Hause. Verwenden Sie Widerstandsbänder für Unterstützung wenn nötig. 3-5 Sätze täglich für beste Ergebnisse.",
+                    athlete: "Athlean-X"
+                },
+                {
+                    title: "Im Gym: T-Bar Rudern",
+                    description: "Das T-Bar Rudern ist fantastisch für tiefe Rückenmasse. Schwere Gewichte mit weniger Reps (6-8) sind hier empfohlen.",
+                    athlete: "Cedric McMillan"
+                }
+            ]
+        },
+        "Schultern": {
+            emoji: "🗻",
+            tips: [
+                {
+                    title: "Militärpresse für Kraft",
+                    description: "Die Militärpresse ist die beste Übung für Schulterkraft und -größe. Arbeiten Sie progressiv an dieser Bewegung.",
+                    athlete: "George Leeman"
+                },
+                {
+                    title: "Seitliche Erhebungen isolieren",
+                    description: "Verwenden Sie leichtere Gewichte bei seitlichen Erhebungen und konzentrieren Sie sich auf die Isolation. Dies ist kein Kraft-Bereich.",
+                    athlete: "Flex Wheeler"
+                },
+                {
+                    title: "Schulter-Winkel variieren",
+                    description: "Trainieren Sie Vordere, Mittlere und Hintere Schultern separat mit unterschiedlichen Winkeln und Griff-Positionen.",
+                    athlete: "Derek Lunsford"
+                },
+                {
+                    title: "Zuhause: Pike Pushups",
+                    description: "Pike Pushups sind eine großartige Schulterkraft-Übung zuhause. Machen Sie 3-4 Sätze à 8-12 Reps für effektives Schultertraining.",
+                    athlete: "Thenx"
+                },
+                {
+                    title: "Im Gym: Machine Shoulder Press",
+                    description: "Die Schulter-Pressmaschine ermöglicht explosives Training mit stabiler Bewegung. Perfekt für Volumen und Pump.",
+                    athlete: "Hany Rambod"
+                }
+            ]
+        },
+        "Beine": {
+            emoji: "🦵",
+            tips: [
+                {
+                    title: "Kniebeugen sind König",
+                    description: "Schwere Kniebeugen sind die beste Übung für Beinmasse. Gehen Sie tief, verwenden Sie saubere Form und progredieren Sie systematisch.",
+                    athlete: "Tom Platz"
+                },
+                {
+                    title: "Trainingsfrequenz",
+                    description: "Trainieren Sie Beine mindestens 2x pro Woche. Viele Athleten machen 3x wöchentlich für optimales Wachstum.",
+                    athlete: "Hany Rambod"
+                },
+                {
+                    title: "Quad und Hamstring Balance",
+                    description: "Achten Sie darauf, sowohl vordere als auch hintere Oberschenkel auszubilden um Verletzungen zu vermeiden und symmetrisches Wachstum zu erreichen.",
+                    athlete: "Milos Sarcev"
+                },
+                {
+                    title: "Zuhause: Bodyweight Squats & Lunges",
+                    description: "Kniebeugen mit Eigengewicht und Ausfallschritte sind großartig zuhause. Machen Sie höhere Wiederholungen (15-20) für Pump und Ausdauer.",
+                    athlete: "Nikki Blackketter"
+                },
+                {
+                    title: "Im Gym: Hack Squat Machine",
+                    description: "Die Hack Squat Maschine ermöglicht schwere, tiefe Sätze ohne Rückenverletzungsrisiko. Ideal für Isolationstraining.",
+                    athlete: "Iain Valliere"
+                }
+            ]
+        },
+        "Bauch & Core": {
+            emoji: "⚡",
+            tips: [
+                {
+                    title: "Schwere Übungen für Core Stabilität",
+                    description: "Kniebeugen, Kreuzheben und Planks sind die besten Übungen für einen starken Core. Schwere, zusammengesetzte Bewegungen bauen echte Stärke auf.",
+                    athlete: "Charles Poliquin"
+                },
+                {
+                    title: "Hängend Beinheben",
+                    description: "Hängend Beinheben am Klimmzug ist eine der besten Bauchübungen. Kontrolliert heben und senken, nicht Schwung nutzen.",
+                    athlete: "Kinobody"
+                },
+                {
+                    title: "Planks für Dauer",
+                    description: "Halten Sie 30-60 Sekunden lange Planks mit guter Form. Progressiv arbeiten, bis Sie 90+ Sekunden halten können.",
+                    athlete: "Jeff Nippard"
+                },
+                {
+                    title: "Zuhause: Kniebeugen & Lie Down Crunches",
+                    description: "Liegende Crunches zuhause machen, 3 Sätze à 15-20 Reps. Kombination mit Kernübungen für bestes Wachstum.",
+                    athlete: "Athlean-X"
+                },
+                {
+                    title: "Im Gym: Cable Wood Chops",
+                    description: "Kabel-Holzhacker trainieren den ganzen Core in Rotationsbewegung. Nutzen Sie schwerere Gewichte für Kraft und Wachstum.",
+                    athlete: "Max Chewning"
+                }
+            ]
+        },
+        "Unterarme": {
+            emoji: "🖐️",
+            tips: [
+                {
+                    title: "Wrist Curls & Reverse Wrist Curls",
+                    description: "Wrist Curls und Reverse Wrist Curls isolieren die Unterharme perfekt. 3-4 Sätze à 12-15 Reps sind ideal.",
+                    athlete: "Bigger Leaner Stronger"
+                },
+                {
+                    title: "Farmer Carries",
+                    description: "Farmer Carries (schwere Gewichte tragen) bauen Unterarm-Kraft und Griffkraft auf. 3-4 Sätze à 40-60 Sekunden.",
+                    athlete: "Brian Shaw"
+                },
+                {
+                    title: "Reverse Griff Curls",
+                    description: "Dumbbell Curls mit umgekehrtem Griff trainieren die Unterarme und oberen Bizeps gleichzeitig.",
+                    athlete: "Mountain Dog John Meadows"
+                },
+                {
+                    title: "Zuhause: Griffstärke mit Widerstand",
+                    description: "Nutzen Sie Widerstandsbänder für Unterarm-Training zuhause. 3 Sätze täglich halten können die Griffkraft stark verbessern.",
+                    athlete: "FitnessX"
+                },
+                {
+                    title: "Im Gym: Wrist Machine",
+                    description: "Spezielle Wrist-Maschinen im Gym ermöglichen isoliertes, schweres Unterarm-Training mit stabiler Bewegung.",
+                    athlete: "Fouad Abiad"
+                }
+            ]
+        },
+        "Gesäß (Glutes)": {
+            emoji: "🍑",
+            tips: [
+                {
+                    title: "Hip Thrusts für Maximal Glute Growth",
+                    description: "Hip Thrusts sind die beste Übung für Glute Hypertrophie. Arbeiten Sie mit schweren Gewichten und voller Kontraktion.",
+                    athlete: "Bret Contreras"
+                },
+                {
+                    title: "Kniebeugen breiter Stand",
+                    description: "Breite Kniebeugen aktivieren die Glutes mehr als enge Varianten. Positionieren Sie die Füße schulterbreit für optimales Glute-Engagement.",
+                    athlete: "Nikki Blackketter"
+                },
+                {
+                    title: "Bulgarian Split Squats",
+                    description: "Bulgarian Split Squats sind fantastisch für Glute-Fokus und einseitiges Training. 3-4 Sätze à 8-10 Reps pro Bein.",
+                    athlete: "Kelsey Wells"
+                },
+                {
+                    title: "Zuhause: Glute Bridges & Kickbacks",
+                    description: "Glute Bridges und Donkey Kicks sind perfekt zuhause. 3 Sätze à 12-15 Reps. Verwenden Sie Widerstandsbänder für zusätzliche Spannung.",
+                    athlete: "Tones & Curves"
+                },
+                {
+                    title: "Im Gym: Leg Press breite Haltung",
+                    description: "Leg Press mit breitem Fuß-Stand und höherer Fußposition trainiert Glutes intensiv. Schwere Gewichte für maximales Glute-Wachstum.",
+                    athlete: "Iain Valliere"
+                }
+            ]
+        },
+        "Home Workout": {
+            emoji: "🏠",
+            tips: [
+                {
+                    title: "Minimale Ausrüstung maximal effektiv",
+                    description: "Sie brauchen nicht viel! Eine Hantel, eine Pull-up Bar und Widerstandsbänder sind genug für ein volles Körpertraining.",
+                    athlete: "Calisthenics Movement"
+                },
+                {
+                    title: "Progressive Calisthenics",
+                    description: "Meistern Sie fortgeschrittene Bewegungen wie Human Flags, Handstand Pushups und Muscle Ups für echte Kraft ohne Gewichte.",
+                    athlete: "Frank Medrano"
+                },
+                {
+                    title: "Zirkeltraining zuhause",
+                    description: "Kombinieren Sie Liegestütze, Kniebeugen, Ausfallschritte und Planks in Zirkeln für Cardio und Kraft gleichzeitig.",
+                    athlete: "Anllela Sagra"
+                },
+                {
+                    title: "Widerstandsbänder maximieren",
+                    description: "Widerstandsbänder sind günstig und vielseitig. Use sie für all Ihre Isolations-Übungen zuhause.",
+                    athlete: "Buff Dudes"
+                },
+                {
+                    title: "Regelmäßigkeit > Perfektion",
+                    description: "Zuhause-Training ist am besten, wenn es konsistent ist. 30-45 Minuten täglich ist effektiver als sporadisch ins Gym zu gehen.",
+                    athlete: "Shawn T"
+                }
+            ]
+        },
+        "Im Gym Trainieren": {
+            emoji: "🏋️‍♂️",
+            tips: [
+                {
+                    title: "Progressive Überladung",
+                    description: "Das Wichtigste im Gym ist, jede Woche ein wenig schwerer zu werden. Erhöhen Sie das Gewicht um 2-5 Pfund, wenn Sie es können.",
+                    athlete: "Jeff Nippard"
+                },
+                {
+                    title: "Richtige Technnik vor Gewicht",
+                    description: "Lerne zuerst saubere Form mit leichteren Gewichten. Dies verhindert Verletzungen und ermöglicht längerfristiges Training.",
+                    athlete: "Mark Rippetoe"
+                },
+                {
+                    title: "Maschinen vs. Freie Gewichte",
+                    description: "Verwende Freie Gewichte für schwere, zusammengesetzte Bewegungen und Maschinen zur Isolation und Sicherheit.",
+                    athlete: "Greg Nuckols"
+                },
+                {
+                    title: "Trainingssplit Strukturieren",
+                    description: "Push/Pull/Legs oder Upper/Lower sind gute Splits für Anfänger. Fortgeschrittene können PPL 2x pro Woche machen.",
+                    athlete: "Eric Helms"
+                },
+                {
+                    title: "Rest-Pause-Sätze",
+                    description: "Machen Sie einen Satz bis zum Muskelversagen, ruhen Sie 20 Sekunden, machen Sie weiterer Satz. Dies maximiert Muskelermüdung.",
+                    athlete: "Gavin Dudeney"
+                }
+            ]
+        },
+        "Anfänger Tipps": {
+            emoji: "🌟",
+            tips: [
+                {
+                    title: "Lernen Sie die Basis-Lifts",
+                    description: "Meistern Sie: Kniebeugen, Bankdrücken, Kreuzheben, Militärpresse und Reihen. Diese bilden die Grundlage Ihrer Fitness.",
+                    athlete: "Starting Strength"
+                },
+                {
+                    title: "3x pro Woche Trainieren",
+                    description: "Anfänger sollten 3x pro Woche trainieren mit mindestens 1 Ruhetag zwischen den Trainings.",
+                    athlete: "Strong Lifts 5x5"
+                },
+                {
+                    title: "Kleine Stückchen Gewichte verwenden",
+                    description: "Beginnend mit kleinen Platten (1,25 kg) für progressive Überladung. Dies erlaubt bessere Progression im Laufe der Zeit.",
+                    athlete: "Starting Strength Coach"
+                },
+                {
+                    title: "Video Tutorials nutzen",
+                    description: "Schauen Sie YouTube Videos bevor Sie eine Übung machen. Perfekte Form als Anfänger verhindert Jahre von Verletzungen später.",
+                    athlete: "Athlean-X"
+                },
+                {
+                    title: "Ehrgeiz mit Geduld",
+                    description: "Seien Sie nicht ungeduldig. Die ersten 6 Wochen sind die schwierigsten. Nach 8 Wochen werden Sie großen Unterschied sehen.",
+                    athlete: "Kai Greene"
+                }
+            ]
+        },
+        "Ernährung & Nutrition": {
+            emoji: "🥗",
+            tips: [
+                {
+                    title: "Protein ist König",
+                    description: "Essen Sie 0,7-1g Protein pro Pfund Körpergewicht täglich. Dies ist essentiell für Muskelwachstum und Regeneration.",
+                    athlete: "Mike Israetel"
+                },
+                {
+                    title: "Kalorienüberschuss zum Wachstum",
+                    description: "Um Muskeln zu bauen, müssen Sie etwa 300-500 Kalorien über Ihrem Wartungsniveau essen.",
+                    athlete: "Eric Helms"
+                },
+                {
+                    title: "Kohlenhydrate vor dem Training",
+                    description: "Essen Sie Kohlenhydrate 1-2 Stunden vor dem Training für Energie und bessere Performance.",
+                    athlete: "John Kaywakian"
+                },
+                {
+                    title: "Hydration ist wichtig",
+                    description: "Trinken Sie mindestens 3-4 Liter Wasser täglich. Gute Hydration hilft bei Recovery und Leistung.",
+                    athlete: "Layne Norton"
+                },
+                {
+                    title: "Post-Workout Mahlzeit",
+                    description: "Essen Sie Protein und Kohlenhydrate innerhalb von 2 Stunden nach dem Training. Dies hilft Muskelabbau zu verhinden und Recovery zu unterstützen.",
+                    athlete: "Biolayne"
+                }
+            ]
+        },
+        "Recovery & Regeneration": {
+            emoji: "😴",
+            tips: [
+                {
+                    title: "7-9 Stunden Schlaf",
+                    description: "Schlaf ist wenn Ihre Muskeln wachsen. 7-9 Stunden pro Nacht ist essentiell für optimales Muskelwachstum und Recovery.",
+                    athlete: "Sleep Coach Shawn Stevenson"
+                },
+                {
+                    title: "Stretching & Mobilität",
+                    description: "Verbringen Sie 10-15 Minuten pro Tag mit Stretching und Mobilität. Dies verhindert Verletzungen und verbessert Bewegungsbereich.",
+                    athlete: "Athlean-X"
+                },
+                {
+                    title: "Foam Rolling",
+                    description: "Foam Rolling nach dem Training kann Muskelkater reduzieren und die Regeneration beschleunigen. 30-60 Sekunden pro Muskelgruppe.",
+                    athlete: "TriggerPoint"
+                },
+                {
+                    title: "Deload Wochen",
+                    description: "Jede 4-6 Wochen, reduzieren Sie Volumen auf 50% für eine Deload Woche. Dies erlaubt CNS und Gelenken sich zu erholen.",
+                    athlete: "Renaissance Periodization"
+                },
+                {
+                    title: "Suplementierung",
+                    description: "Kreatin, Whey Protein und Multivitamine sind bewährte Supplements. Fokussieren Sie zuerst auf Ernährung, dann auf Supplements.",
+                    athlete: "Examine.com"
+                }
+            ]
+        }
+    };
+
+    // Tips Container füllen
+    function loadTips() {
+        const container = document.getElementById('tipsContainer');
+        container.innerHTML = '';
+        
+        for (const [muscleGroup, data] of Object.entries(tipsData)) {
+            const card = document.createElement('div');
+            card.className = 'muscle-group';
+            card.onclick = () => openTipsModal(muscleGroup);
+            
+            const tipsCount = data.tips.length;
+            card.innerHTML = `
+                <h2>${data.emoji} ${muscleGroup}</h2>
+                <p>${tipsCount} Tipps von Profisportlern</p>
+                <p style="color: #FF6B35; font-size: 12px; margin-top: 15px;">👆 Klick für mehr...</p>
+            `;
+            
+            container.appendChild(card);
+        }
+    }
+
+    function openTipsModal(muscleGroup) {
+        const data = tipsData[muscleGroup];
+        const modal = document.getElementById('tipsModal');
+        const title = document.getElementById('modalTitle');
+        const content = document.getElementById('modalTipsContent');
+        
+        title.textContent = `${data.emoji} ${muscleGroup} Tipps`;
+        content.innerHTML = '';
+        
+        data.tips.forEach(tip => {
+            const tipDiv = document.createElement('div');
+            tipDiv.className = 'tip-item';
+            tipDiv.innerHTML = `
+                <h4>${tip.title}</h4>
+                <p>${tip.description}</p>
+                <div class="athlete">💬 ${tip.athlete}</div>
+            `;
+            content.appendChild(tipDiv);
+        });
+        
+        modal.style.display = 'block';
+    }
+
+    function closeTipsModal() {
+        document.getElementById('tipsModal').style.display = 'none';
+    }
+
+    // Modal schließen wenn außerhalb angeklickt wird
+    window.onclick = function(event) {
+        const modal = document.getElementById('tipsModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Tips beim Laden anzeigen
+    document.addEventListener('DOMContentLoaded', loadTips);
+</script>
+
+<img class="gym-background" src="bilder/gym_background.png" alt="GYM_BACKGROUND">
+</body>
+</html>

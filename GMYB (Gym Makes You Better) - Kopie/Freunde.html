@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freunde - Gym Makes You Better</title>
+    <link rel="stylesheet" href="lib/style.css">
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="lib/script.js"></script>
+</head>
+<body>
+<div class="logo">
+  <a href="index.html">
+    <img src="bilder/Logo_white.png" width="200" height="auto" alt="Logo">
+  </a>
+</div>
+
+<div class="user-info">
+  <span id="user-greeting">Willkommen!</span>
+  <button class="profile-btn" onclick="window.location.href='Profil.html'">👤 Profil</button>
+  <button class="logout-btn" onclick="logout()">Abmelden</button>
+</div>
+
+<div class="dashboard2">
+  <div class="card2">
+    <h2>👥 Freunde</h2>
+    
+    <button onclick="debugFriends()" style="background: #FF6B35; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 20px; width: 100%;">🔧 DEBUG: Freunde prüfen</button>
+
+    <!-- Freund hinzufügen -->
+    <div class="friends-section">
+      <h3>🔍 Freund hinzufügen</h3>
+      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <input type="text" id="friend-search-input" placeholder="Benutzername eingeben..." style="flex: 1; padding: 10px 12px; background-color: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: white; font-size: 14px; box-sizing: border-box;">
+        <button onclick="searchFriend()" class="login-btn" style="width: 120px;">Suchen</button>
+      </div>
+      
+      <div id="friend-search-results" style="background: #2a2a2a; border-radius: 8px; padding: 10px; display: none; max-height: 200px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- Freund-Anfragen -->
+    <div class="friends-section" style="margin-top: 25px;">
+      <h3>📨 Anfragen (<span id="request-count">0</span>)</h3>
+      <div id="friend-requests" style="background: #2a2a2a; border-radius: 8px; padding: 10px;"></div>
+    </div>
+
+    <!-- Meine Freunde -->
+    <div class="friends-section" style="margin-top: 25px;">
+      <h3>✅ Meine Freunde (<span id="friends-count">0</span>)</h3>
+      <div id="friends-list" style="background: #2a2a2a; border-radius: 8px; padding: 10px;"></div>
+    </div>
+
+    <!-- Battles -->
+    <div class="friends-section" style="margin-top: 25px;">
+      <h3>⚔️ Battles</h3>
+      <div id="active-battles" style="background: #2a2a2a; border-radius: 8px; padding: 10px;"></div>
+    </div>
+
+    <button onclick="window.location.href='index.html'" class="login-btn" style="background: #666; margin-top: 20px; width: 100%;">Zurück zum Dashboard</button>
+  </div>
+</div>
+
+<img class="gym-background" src="bilder/gym_background.png" alt="GYM_BACKGROUND">
+
+<!-- Battle Modal -->
+<div id="battle-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeBattleModal()">&times;</span>
+    <h2>⚔️ Battle starten</h2>
+    
+    <div class="form-group">
+      <label>Gegner</label>
+      <p id="battle-opponent" style="color: #4CAF50; font-weight: bold;"></p>
+    </div>
+
+    <div class="form-group">
+      <label>Battle-Dauer (Tage)</label>
+      <select id="battle-duration">
+        <option value="1">1 Tag</option>
+        <option value="3">3 Tage</option>
+        <option value="7" selected>7 Tage (1 Woche)</option>
+        <option value="14">14 Tage (2 Wochen)</option>
+        <option value="30">30 Tage (1 Monat)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Titel</label>
+      <input type="text" id="battle-title" placeholder="z.B. Arm Day Challenge" required>
+    </div>
+
+    <div class="form-group">
+      <label>Beschreibung</label>
+      <textarea id="battle-description" placeholder="Was ist das Ziel des Battle?" style="width: 100%; padding: 10px; background-color: #1a1a1a; border: 1px solid #444; border-radius: 6px; color: white; font-size: 14px; min-height: 60px; box-sizing: border-box;"></textarea>
+    </div>
+
+    <button onclick="startBattle()" class="login-btn" style="width: 100%; background: #FF6B35; margin-top: 10px;">⚔️ Battle starten</button>
+  </div>
+</div>
+
+<style>
+.friends-section {
+  background: #1a1a1a;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #333;
+}
+
+.friends-section h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #4CAF50;
+  font-size: 16px;
+}
+
+.friend-item,
+.request-item,
+.battle-item {
+  background: #1a1a1a;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border-left: 3px solid #4CAF50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.battle-item {
+  border-left-color: #FF6B35;
+}
+
+.friend-info,
+.request-info,
+.battle-info {
+  flex: 1;
+}
+
+.friend-info h4,
+.request-info h4,
+.battle-info h4 {
+  margin: 0 0 5px 0;
+  color: white;
+  font-size: 14px;
+}
+
+.friend-info p,
+.request-info p,
+.battle-info p {
+  margin: 3px 0;
+  font-size: 12px;
+  color: #999;
+}
+
+.friend-stats {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
+}
+
+.friend-actions,
+.request-actions,
+.battle-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.friend-actions button,
+.request-actions button,
+.battle-actions button {
+  padding: 6px 12px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+  min-height: 32px;
+}
+
+.btn-add {
+  background: #4CAF50;
+  color: white;
+}
+
+.btn-add:hover {
+  background: #45a049;
+}
+
+.btn-accept {
+  background: #4CAF50;
+  color: white;
+}
+
+.btn-accept:hover {
+  background: #45a049;
+}
+
+.btn-reject {
+  background: #ff6b6b;
+  color: white;
+}
+
+.btn-reject:hover {
+  background: #ff5252;
+}
+
+.btn-battle {
+  background: #FF6B35;
+  color: white;
+}
+
+.btn-battle:hover {
+  background: #E55A25;
+}
+
+.btn-remove {
+  background: #ff6b6b;
+  color: white;
+}
+
+.btn-remove:hover {
+  background: #ff5252;
+}
+
+.btn-view {
+  background: #4CAF50;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #45a049;
+}
+
+.empty-message {
+  text-align: center;
+  color: #888;
+  padding: 15px;
+  font-size: 13px;
+}
+
+.search-result {
+  background: #1a1a1a;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border-left: 3px solid #4CAF50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-result-info h4 {
+  margin: 0;
+  color: white;
+  font-size: 14px;
+}
+
+.search-result-info p {
+  margin: 3px 0;
+  font-size: 12px;
+  color: #999;
+}
+
+select {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  background-color: #333;
+}
+</style>
+
+</body>
+</html>
