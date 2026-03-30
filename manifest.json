@@ -1,0 +1,63 @@
+{
+  "name": "Gym Makes You Better",
+  "short_name": "GMYB",
+  "description": "Dein persönlicher Fitness-Tracker und Trainingsplaner. Verfolge deine Workouts, erreiche deine Ziele!",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#FF6B35",
+  "background_color": "#0d0d0d",
+  "icons": [
+    {
+      "src": "bilder/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "bilder/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Heutiges Workout",
+      "short_name": "Workout",
+      "description": "Starten Sie Ihr heutiges Workout",
+      "url": "/Heutiges-Workout.html",
+      "icons": [
+        {
+          "src": "bilder/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Trainingsplan",
+      "short_name": "Plan",
+      "description": "Bearbeiten Sie Ihren Trainingsplan",
+      "url": "/Trainingsplan.html",
+      "icons": [
+        {
+          "src": "bilder/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Tips & Tricks",
+      "short_name": "Tips",
+      "description": "Tipps von Profisportlern",
+      "url": "/Tips.html",
+      "icons": [
+        {
+          "src": "bilder/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

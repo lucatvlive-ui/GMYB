@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness App</title>
+
+    <!-- CSS einbinden -->
+    <link rel="stylesheet" href="lib/style.css">
+    <!-- JavaScript einbinden -->
+    <script src="lib/script.js"></script>
+</head>
+<body>
+   <div class="logo">
+  <img src="bilder/Logo_white.png" width="200" height="auto" alt="Logo">
+</div>
+
+
+<div class="dashboard2">
+    <div class="card2" id="Dein Trainingsplan" >
+    <h2> Dein Trainingsplan</h2>
+    <ul class="training-list" id="training-list">
+    </ul>
+     </div>
+
+
+
+
+
+     <div class="card2" id="übungen" >
+    <h2>Übungen</h2>
+    <ul class="exercise-list" id="exercise-list">
+        <li class="exercise-item" data-exercise="Push-ups">
+            <span>Push-ups</span>
+            <button class="return-btn" onclick="addToTrainingPlan(this)">→</button>
+            <button class="delete-btn" onclick="deleteExercise(this)">🗑</button>
+        </li>
+        <li class="exercise-item" data-exercise="Squats">
+            <span>Squats</span>
+            <button class="return-btn" onclick="addToTrainingPlan(this)">→</button>
+            <button class="delete-btn" onclick="deleteExercise(this)">🗑</button>
+        </li>
+        <li class="exercise-item" data-exercise="Deadlifts">
+            <span>Deadlifts</span>
+            <button class="return-btn" onclick="addToTrainingPlan(this)">→</button>
+            <button class="delete-btn" onclick="deleteExercise(this)">🗑</button>
+        </li>
+        <li class="exercise-item" data-exercise="Bench Press">
+            <span>Bench Press</span>
+            <button class="return-btn" onclick="addToTrainingPlan(this)">→</button>
+            <button class="delete-btn" onclick="deleteExercise(this)">🗑</button>
+        </li>
+    </ul>
+    <div class="add-exercise-form">
+        <input type="text" id="new-exercise-input" placeholder="Neue Übung hinzufügen..." />
+        <button onclick="addCustomExercise()">Hinzufügen</button>
+    </div>
+    </div>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <img class="gym-background" src="bilder/gym_background.png" alt="GYM_BACKGROUND">
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Gym Makes You Better</title>
+    <link rel="stylesheet" href="lib/style.css">
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="lib/script.js"></script>
+</head>
+<body>
+
+<div class="logo">
+  <a href="index.html">
+    <img src="bilder/Logo_white.png" width="200" height="auto" alt="Logo">
+  </a>
+</div>
+
+<div class="user-info">
+  <span id="user-greeting">Willkommen!</span>
+  <button class="logout-btn" onclick="logout()">Abmelden</button>
+</div>
+
+<div class="profile-container">
+  <div class="profile-card">
+    <h1>Mein Profil</h1>
+    
+    <div class="profile-header">
+      <div class="avatar" onclick="document.getElementById('profile-image-input').click()" style="cursor: pointer; position: relative;">
+        <img id="profile-avatar-img" src="" alt="Profilbild" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: none;">
+        <span id="profile-avatar-emoji">👤</span>
+      </div>
+      <input type="file" id="profile-image-input" style="display: none;" accept="image/*" onchange="handleProfileImageUpload(event)">
+      <div class="profile-info">
+        <h2 id="profile-name">Name</h2>
+        <p id="profile-email">Email</p>
+        <p style="font-size: 12px; color: #888; margin-top: 5px;">Klick auf Avatar zum Ändern</p>
+      </div>
+    </div>
+
+    <div class="profile-stats">
+      <div class="stat-box">
+        <h3>Level</h3>
+        <p class="stat-value" id="profile-level">1</p>
+      </div>
+      <div class="stat-box">
+        <h3>Punkte</h3>
+        <p class="stat-value" id="profile-points">0</p>
+      </div>
+      <div class="stat-box">
+        <h3>Workouts</h3>
+        <p class="stat-value" id="profile-workouts">0</p>
+      </div>
+      <div class="stat-box">
+        <h3>Tage aktiv</h3>
+        <p class="stat-value" id="profile-streak">0</p>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      <h3>Fortschritt zum nächsten Level</h3>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <p id="progress-text">0 / 100 Punkte</p>
+    </div>
+
+    <div class="profile-section">
+      <h3>Persönliche Daten</h3>
+      <form onsubmit="updateProfile(event)">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="edit-name" required placeholder="Name">
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="edit-email" placeholder="your@email.com">
+        </div>
+        
+        <div class="form-group">
+          <label>Ziel für heute (kg)</label>
+          <input type="number" id="edit-goal" placeholder="z.B. 5000 kg">
+        </div>
+
+        <div class="form-group">
+          <label>Gewicht (kg)</label>
+          <input type="number" id="edit-weight" step="0.1" placeholder="z.B. 75.5">
+        </div>
+
+        <button type="submit" class="login-btn">Speichern</button>
+      </form>
+    </div>
+
+    <button onclick="window.location.href='index.html'" class="login-btn" style="background: #666; margin-top: 20px;">Zurück zum Dashboard</button>
+  </div>
+</div>
+
+<img class="gym-background" src="bilder/gym_background.png" alt="GYM_BACKGROUND">
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness App</title>
+
+    <!-- CSS einbinden -->
+    <link rel="stylesheet" href="lib/style.css">
+    <!-- JavaScript einbinden -->
+    <script src="lib/script.js"></script>
+</head>
+<body>
+   <div class="logo">
+  <img src="bilder/Logo_white.png" width="200" height="auto" alt="Logo">
+</div>
+
+<div class="dashboard2">
+    <div class="card2" id="today-workout">
+    <h2>Heutiges Workout</h2>
+    <ul class="exercise-list" id="workout-exercise-list">
+        <li class="exercise-item clickable-exercise" data-exercise="Push-ups" onclick="openWorkoutForm(this)">
+            <span>Push-ups</span>
+        </li>
+        <li class="exercise-item clickable-exercise" data-exercise="Squats" onclick="openWorkoutForm(this)">
+            <span>Squats</span>
+        </li>
+        <li class="exercise-item clickable-exercise" data-exercise="Deadlifts" onclick="openWorkoutForm(this)">
+            <span>Deadlifts</span>
+        </li>
+        <li class="exercise-item clickable-exercise" data-exercise="Bench Press" onclick="openWorkoutForm(this)">
+            <span>Bench Press</span>
+        </li>
+    </ul>
+    </div>
+</div>
+
+<!-- Workout Form Modal -->
+<div id="workout-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeWorkoutForm()">&times;</span>
+        <h2 id="exercise-title"></h2>
+        <form onsubmit="submitWorkoutForm(event)">
+            <div class="form-group">
+                <label for="weight-input">Gewicht (kg):</label>
+                <input type="number" id="weight-input" step="0.5" min="0" />
+                <label class="checkbox-label">
+                    <input type="checkbox" id="no-weight-checkbox" onchange="toggleWeightInput()" />
+                    Kein Gewicht verwendet
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="reps-input">Wiederholungen:</label>
+                <input type="number" id="reps-input" required min="0" />
+            </div>
+            <div class="form-group">
+                <label for="bad-reps-input">Wiederholungen nicht sauber ausgefuehrt:</label>
+                <input type="number" id="bad-reps-input" required min="0" />
+            </div>
+            <button type="submit" class="submit-btn">Speichern</button>
+        </form>
+    </div>
+</div>
+
+    <img class="gym-background" src="bilder/gym_background.png" alt="GYM_BACKGROUND">
+</body>
+</html>

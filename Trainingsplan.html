@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainingsplan - Gym Makes You Better</title>
+    <link rel="stylesheet" href="lib/style.css">
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="lib/script.js"></script>
+    <!-- 🌐 Cloud Sync für Multi-Device Support -->
+    <script src="lib/cloud-sync.js"></script>
+</head>
+<body>
+
+<div class="logo">
+  <a href="index.html">
+    <img src="bilder/Logo_white.png" width="200" height="auto" alt="Logo">
+  </a>
+</div>
+
+<div class="user-info">
+  <span id="user-greeting">Willkommen!</span>
+  <button class="profile-btn" onclick="window.location.href='Profil.html'">👤 Profil</button>
+  <button class="logout-btn" onclick="logout()">Abmelden</button>
+</div>
+
+<div class="dashboard2">
+  <div class="card2">
+    <h2>Mein Trainingsplan</h2>
+    
+    <a href="index.html" class="back-btn">← Zurück zum Dashboard</a>
+    
+    <div class="plan-editor">
+      <h3>Trainingstage hinzufügen</h3>
+      <form onsubmit="addTrainingDay(event)">
+        <div class="form-group">
+          <label>Wochentag</label>
+          <select id="day-select" required>
+            <option value="">Wählen...</option>
+            <option value="Montag">Montag</option>
+            <option value="Dienstag">Dienstag</option>
+            <option value="Mittwoch">Mittwoch</option>
+            <option value="Donnerstag">Donnerstag</option>
+            <option value="Freitag">Freitag</option>
+            <option value="Samstag">Samstag</option>
+            <option value="Sonntag">Sonntag</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Name (z.B. "Chest Day")</label>
+          <input type="text" id="plan-name" required placeholder="Push Day, Leg Day...">
+        </div>
+
+        <div class="form-group">
+          <label>Übungen (komma-getrennt)</label>
+          <textarea id="exercises" required placeholder="Bankdrücken, Kurzhantel, Liegestütze..."></textarea>
+        </div>
+
+        <button type="submit" class="login-btn">Trainingstag hinzufügen</button>
+      </form>
+    </div>
+
+    <h3 style="margin-top: 30px;">Mein Plan</h3>
+    <div id="training-plan-list" class="plan-list"></div>
+
+    <button onclick="savePlan()" class="login-btn" style="margin-top: 20px; width: 100%;">Speichern</button>
+    <button onclick="window.location.href='index.html'" class="login-btn" style="background: #666; margin-top: 10px; width: 100%;">Zurück</button>
+  </div>
+</div>
+
+<img class="gym-background" src="bilder/gym_background.png" alt="GYM_BACKGROUND">
+
+<style>
+.plan-editor {
+  background: #2a2a2a;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.plan-editor textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.plan-editor textarea:focus {
+  outline: none;
+  border-color: #4CAF50;
+  background-color: #222;
+}
+
+.plan-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.plan-item {
+  background: #1a1a1a;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border-left: 4px solid #4CAF50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plan-item-content {
+  flex: 1;
+}
+
+.plan-item h4 {
+  margin: 0 0 8px 0;
+  color: #4CAF50;
+}
+
+.plan-item p {
+  margin: 5px 0;
+  color: #999;
+  font-size: 13px;
+}
+
+.plan-item button {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.plan-item button:hover {
+  background: #ff5252;
+}
+</style>
+
+</body>
+</html>
